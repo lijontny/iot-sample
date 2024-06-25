@@ -2,23 +2,29 @@
 
 2. Role Alias
 
-```aws iot create-role-alias   --role-alias S3DeviceIoTRoleAlias   --role-arn $(aws cloudformation describe-stacks \
+```
+aws iot create-role-alias   --role-alias S3DeviceIoTRoleAlias   --role-arn $(aws cloudformation describe-stacks \
     --output text \
     --stack-name s3-auth-iot \
-    --query 'Stacks[0].Outputs[?OutputKey==`IAMRoleArn`].OutputValue')   --credential-duration-seconds 3600```
+    --query 'Stacks[0].Outputs[?OutputKey==`IAMRoleArn`].OutputValue')   --credential-duration-seconds 3600
+```
+
 3. THING GROUP
 THING_NAME=s3-auth-iot
 THING_GROUP_NAME=s3IoTDevices
 
-```THING_GROUP_ARN=$(aws iot create-thing-group \
+```
+THING_GROUP_ARN=$(aws iot create-thing-group \
   --output text \
   --thing-group-name $THING_GROUP_NAME \
-  --query 'thingGroupArn')```
+  --query 'thingGroupArn')
+```
 
 
 4. Create a thing
 
-```aws iot create-thing \
+```
+aws iot create-thing \
   --thing-name "${THING_NAME}"
 
 aws iot add-thing-to-thing-group \
@@ -28,7 +34,8 @@ aws iot add-thing-to-thing-group \
 
 5. Attach the policy
 
-```aws iot attach-policy \
+```
+aws iot attach-policy \
   --policy-name $(aws cloudformation describe-stacks \
     --output text \
     --stack-name s3-auth-iot \
