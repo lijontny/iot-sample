@@ -65,13 +65,13 @@ curl --silent 'https://www.amazontrust.com/repository/SFSRootCAG2.pem' \
 ```
 8. Find all required credentials
 
-endpoint = "credential endpoint"
-#find "aws iot describe-endpoint --endpoint-type iot\:CredentialProvider --output text"
-role_alias = "IoT role alias"
-certificate = "cert.pem file"
-private_key = "private.key file"
-thing_name = "things name"
-ca_cert_file = "root-CA.crt"
+endpoint = "credential endpoint" \n
+#find "aws iot describe-endpoint --endpoint-type iot\:CredentialProvider --output text" \n
+role_alias = "IoT role alias" \n
+certificate = "cert.pem file" \n
+private_key = "private.key file" \n
+thing_name = "things name" \n
+ca_cert_file = "root-CA.crt" \n
 
 
 
