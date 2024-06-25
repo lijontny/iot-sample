@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Creates the IAM Roles and IoT Policy required for S3 Devices to use IoT Core's Credential Provider
+Parameters:
+  RoleAliasName:
+    Description: Name of the IoT Role Alias a new device is allowed to assume
+    Type: String
+    Default: S3DeviceIoTRoleAlias
+  BucketName:
+    Type: String
+    Description: Name of the S3 bucket to grant access to
+
+Resources:
+  s3DeviceCertificateBasedIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - credentials.iot.amazonaws.com
+          Action:
+            - "sts:AssumeRole"
+
+  DeviceIAMPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: s3DeviceIAMPolicy
+      Roles:
+        - !Ref s3DeviceCertificateBasedIAMRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action: 
+            - "s3:ListBucket"
+            - "s3:PutObject"
+            - "s3:GetObject"
+          Resource: 
+            - !Sub "arn:aws:s3:::${BucketName}"
+            - !Sub "arn:aws:s3:::${BucketName}/*"
+
+  s3DevicePolicy:
+    Type: AWS::IoT::Policy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action:
+          - iot:Connect
+          Resource: "*"
+        - Effect: Allow
+          Action:
+          - iot:AssumeRoleWithCertificate
+          Resource: !Sub 'arn:aws:iot:${AWS::Region}:${AWS::AccountId}:rolealias/${RoleAliasName}'
+
+Outputs:
+  IAMRoleArn:
+    Description: IoT IAM Role that S3 Devices will be allowed to Assume
+    Value: !GetAtt s3DeviceCertificateBasedIAMRole.Arn
+  s3DevicePolicy:
+    Description: IoT Policy that KVS Camera devices will be assigned
+    Value: !Ref s3DevicePolicy
