@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  VideoBucketName:
+    Type: String
+  AudioBucketName:
+    Type: String
+  LambdaFunctionName:
+    Type: String
+  LambdaFunctionArn:
+    Type: String
+
+Resources:
+  VideoS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      NotificationConfiguration:
+        EventBridgeConfiguration:
+          EventBridgeEnabled: true
+      BucketName: !Ref VideoBucketName
+      AccessControl: Private
+  AudioS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref AudioBucketName
+      AccessControl: Private
+  LambdaInvokePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !Ref LambdaFunctionName
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt AmazonCloudWatchEventRule.Arn
+  AmazonCloudWatchEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventPattern:
+        source:
+          - aws.s3
+        detail-type:
+          - 'AWS API Call via CloudTrail'
+        detail:
+          eventSource:
+            - s3.amazonaws.com
+          eventName:
+            - CopyObject
+            - PutObject
+            - CompleteMultipartUpload
+          requestParameters:
+            bucketName:
+              - !Ref AudioS3Bucket
+
+      Targets:
+        - Arn:
+            !Ref LambdaFunctionArn
+          Id: S3EventNotifications
+          InputTransformer:
+            InputPathsMap:
+              "S3BucketValue" : "$.detail.requestParameters.bucketName"
+              "S3KeyValue" : "$.detail.requestParameters.key"
+            InputTemplate: |
+              {"Parameters" :
+                {
+                  "S3bucket": <S3BucketValue>,
+                  "S3key": <S3KeyValue>
+                }
+              }
+Outputs:
+  AudioBucket:
+    Value: !Ref AudioS3Bucket
+  VideoBucket:
+    Value: !Ref VideoS3Bucket
