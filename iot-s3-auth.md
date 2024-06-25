@@ -17,6 +17,7 @@ THING_GROUP_NAME=s3IoTDevices
 
 
 4. Create a thing
+
 ```aws iot create-thing \
   --thing-name "${THING_NAME}"
 
@@ -24,7 +25,9 @@ aws iot add-thing-to-thing-group \
   --thing-group-name $THING_GROUP_NAME \
   --thing-name $THING_NAME
 ```
+
 5. Attach the policy
+
 ```aws iot attach-policy \
   --policy-name $(aws cloudformation describe-stacks \
     --output text \
@@ -34,14 +37,18 @@ aws iot add-thing-to-thing-group \
 ```
 
 6. Create Certificate
-```CERTIFICATE_ARN=$(aws iot create-keys-and-certificate --set-as-active \
+
+```
+CERTIFICATE_ARN=$(aws iot create-keys-and-certificate --set-as-active \
   --certificate-pem-outfile ./device.cert.pem \
   --public-key-outfile ./device.public.key \
   --private-key-outfile ./device.private.key \
   --output text \
-  --query 'certificateArn')```
+  --query 'certificateArn')
+```
 
-```curl --silent 'https://www.amazontrust.com/repository/SFSRootCAG2.pem' \
+```
+curl --silent 'https://www.amazontrust.com/repository/SFSRootCAG2.pem' \
   --output ./root-CA.crt
 ```
 7. Attach Cert
