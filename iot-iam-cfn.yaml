@@ -6,7 +6,10 @@ Parameters:
     Description: Name of the IoT Role Alias a new device is allowed to assume
     Type: String
     Default: S3DeviceIoTRoleAlias
-  BucketName:
+  BucketAudioName:
+    Type: String
+    Description: Name of the S3 bucket to grant access to
+  BucketVideoName:
     Type: String
     Description: Name of the S3 bucket to grant access to
 
@@ -39,9 +42,16 @@ Resources:
             - "s3:PutObject"
             - "s3:GetObject"
           Resource: 
-            - !Sub "arn:aws:s3:::${BucketName}"
-            - !Sub "arn:aws:s3:::${BucketName}/*"
-
+            - !Sub "arn:aws:s3:::${BucketVideoName}"
+            - !Sub "arn:aws:s3:::${BucketVideoName}/*"
+        - Effect: Allow
+          Action: 
+            - "s3:ListBucket"
+            - "s3:PutObject"
+            - "s3:GetObject"
+          Resource: 
+            - !Sub "arn:aws:s3:::${BucketAudioName}"
+            - !Sub "arn:aws:s3:::${BucketAudioName}/*"
   s3DevicePolicy:
     Type: AWS::IoT::Policy
     Properties:
