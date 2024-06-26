@@ -60,9 +60,10 @@ curl --silent 'https://www.amazontrust.com/repository/SFSRootCAG2.pem' \
   --output ./root-CA.crt
 ```
 7. Attach Cert
-```aws iot attach-thing-principal \
-  --thing-name $THING_NAME \
-  --principal $CERTIFICATE_ARN
+
+```
+aws iot attach-thing-principal --thing-name $THING_NAME --principal $CERTIFICATE_ARN
+
 ```
 8. Find all required credentials
 
