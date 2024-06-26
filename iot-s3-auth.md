@@ -10,9 +10,10 @@ aws iot create-role-alias   --role-alias S3DeviceIoTRoleAlias   --role-arn $(aws
 ```
 
 3. THING GROUP
+```
 THING_NAME=s3-auth-iot
 THING_GROUP_NAME=s3IoTDevices
-
+```
 ```
 THING_GROUP_ARN=$(aws iot create-thing-group \
   --output text \
